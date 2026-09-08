@@ -81,6 +81,14 @@ fastapi_user : fastapi_user sudo users
 su - fastapi_user
 ```
 
+## Установка FFmpeg
+```bash
+sudo apt update
+
+sudo apt install ffmpeg -y
+
+ffmpeg -version
+```
 
 ## Установка окружения проекта
 

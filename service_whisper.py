@@ -9,7 +9,7 @@ import time
 from contextlib import asynccontextmanager
 from typing import Optional
 
-print("Проверка ffmpeg")
+print("Проверка ffmpeg...")
 print(f"Путь к ffmpeg: {shutil.which('ffmpeg')}")
 
 try:
@@ -33,17 +33,20 @@ model_load_time = None
 async def lifespan(app: FastAPI):
     global model, model_load_time
     
-    print("Загрузка модели Whisper Tiny")
+    print("Загрузка модели Whisper Tiny...")
     start = time.time()
-    
-    model = whisper.load_model("tiny", download_root="./models/")
+
+    # загрузить модель из внешнего ресурса
+    model = whisper.load_model("tiny")
+    # Модель может располагатся локально
+    # model = whisper.load_model("tiny", download_root="./models/")
     
     model_load_time = time.time() - start
     print(f"Модель загружена за {model_load_time:.2f} секунд")
     
     yield
     
-    print("Сервис завершает работу")
+    print("Сервис завершает работу...")
 
 
 app = FastAPI(
@@ -75,7 +78,7 @@ async def health_check():
 
 @app.post("/transcribe")
 async def transcribe_audio(
-    file: UploadFile = File(, description="Аудиофайл для распознавания"),
+    file: UploadFile = File(..., description="Аудиофайл для распознавания"),
     language: Optional[str] = None,
     task: str = "transcribe"
 ):
@@ -93,7 +96,7 @@ async def transcribe_audio(
         file_ext = os.path.splitext(file.filename)[1].lower()
         
         if file_ext != '.wav':
-            print(f"Конвертация {file_ext} в WAV")
+            print(f"Конвертация {file_ext} в WAV...")
             audio = AudioSegment.from_file(tmp_path)
             wav_path = tmp_path + ".wav"
             audio.export(wav_path, format="wav")
